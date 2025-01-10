@@ -3,7 +3,6 @@ const asyncHandler = require('express-async-handler')
 const jwt = require('jsonwebtoken')
 require('dotenv').config()
 const bcrypt = require('bcryptjs');
-const {Error}  = require("mongoose");
 const { findOne, findById } = require("../model/transactionSchema");
 const transactionController = require("./transactionController");
 
@@ -14,22 +13,23 @@ const transactionController = require("./transactionController");
 
 const userController = {
     register : asyncHandler(async (req,res) => {
-        const {name,email,password} = req.body
-        if(!name||!email||!password){
+        
+        
+        const {username,email,password} = req.body
+        if(!username||!email||!password){
             throw new Error("Data is incomplete")
         }
         const userFound = await User.findOne({emailId:email})
-
 
         if(userFound)
             throw new Error("Email already taken")
         
       
         const hashedPassword = await bcrypt.hash(password,10)
-
+ 
 
         const createdUser = await User.create({
-            userName:name,
+            userName:username,
             emailId:email,
             password:hashedPassword
         })
@@ -48,6 +48,7 @@ const userController = {
             secure:false,
             sameSite:'none'
         })
+
         
         
         
@@ -57,12 +58,17 @@ const userController = {
     // const userTransactionUpdate =  User.findByIdAndUpdate(id,{transaction : createdTransaction})  //transaction inserted to the db
 
 
-        res.send("User successfully created")
+        res.send(token)
     }),
     signIn :asyncHandler(async(req,res)=>{
+       console.log(req);
        
         const {email,password} = req.body 
-        //const {id} =  req.user
+        console.log("hellooo");
+        
+        if(!email || !password){
+            throw new Error("Data incomplete")
+        }
 
         const userFound = await User.findOne({emailId: email}) 
        
@@ -86,9 +92,17 @@ const userController = {
             id:userFound._id,
             name:userFound.userName
         } 
+        console.log(payload);
+        
+        
 
 
         const token = jwt.sign(payload,process.env.JWT_SECRET_KEY)
+        
+        if(!token){
+            throw new Error("Token not Generated")
+        }
+        
         res.cookie('token',token,{
             maxAge:3*24*60*60*1000,
             httpOnly:true,
@@ -100,7 +114,7 @@ const userController = {
      //console.log(id);
 
 
-        res.send("Successfully Signed in")
+        res.send(token)
 
         
         
@@ -114,21 +128,28 @@ const userController = {
       }),
 
     changePassword : asyncHandler(async(req,res)=>{
-
+        console.log("hi");
         const {newPassword} = req.body  
          const {id} = req.user;
 
 const data = await User.findById(id)  
 console.log(data);
 
+
+
+
 const dbPassword = data.password
+console.log("Passwordhi");
 
 
+//tobedone comparing to be done on front end
 const comparePassword = await bcrypt.compare(newPassword,dbPassword)
-    
+
 
  if(comparePassword)
         throw new Error("Password is same as previous")
+
+ 
 
  const hashedPassword = await bcrypt.hash(newPassword,10)
 
@@ -138,6 +159,7 @@ const comparePassword = await bcrypt.compare(newPassword,dbPassword)
        new:true
         
         })
+       
   
  if(!changePassword)
          throw new Error("Password not changed")
@@ -145,6 +167,8 @@ const comparePassword = await bcrypt.compare(newPassword,dbPassword)
     res.send("Password changed successfully")
         
 }),
+
+
 
  changeName : asyncHandler(async(req,res)=>{
 

@@ -5,17 +5,25 @@ require('dotenv').config()
 
 const middleware = (req,res,next)=>{
 
-    
-const token =  req.cookies.token
-console.log(token);
 
-var decoded = jwt.verify(token,'adarsh')
+console.log(req.body);
+
+const token =  req.headers.authorization.split(" ")[1]
+
+if(!token){
+    throw new Error("Token Doesn't exist")
+}
+console.log(token);
+console.log("hi");
+var decoded = jwt.verify(token,process.env.JWT_SECRET_KEY)
 // console.log(decoded);
+
 req.user = {
     id:decoded.id,
     name:decoded.name
 }
 // console.log(req.user);
+console.log("hi");
  next()
 
 
