@@ -10,6 +10,7 @@ transactionRouter.get("/summary",middleware,transactionController.summary)
 transactionRouter.put("/:id",middleware,transactionController.updateTransaction)
 transactionRouter.get("/get",middleware,transactionController.getTransaction)
 transactionRouter.delete("/delete/:id",middleware,transactionController.deleteTransaction)
+transactionRouter.delete("/deleteone/:id",middleware,transactionController.deleteOneTransaction)
 
 
 

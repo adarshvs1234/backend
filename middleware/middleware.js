@@ -5,8 +5,12 @@ require('dotenv').config()
 
 const middleware = (req,res,next)=>{
 
+   
 
-console.log(req.body);
+
+console.log("middleware running");
+
+
 
 const token =  req.headers.authorization.split(" ")[1]
 

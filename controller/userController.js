@@ -129,29 +129,38 @@ const userController = {
 
     changePassword : asyncHandler(async(req,res)=>{
         console.log("hi");
-        const {newPassword} = req.body  
+        const {password,confirmpassword} = req.body 
+        console.log("confirmpassword",confirmpassword) 
          const {id} = req.user;
 
+            console.log(req.body)
 const data = await User.findById(id)  
 console.log(data);
 
 
-
-
 const dbPassword = data.password
-console.log("Passwordhi");
+console.log("dbPassword",dbPassword)
+console.log("newPassword",password);
+
 
 
 //tobedone comparing to be done on front end
-const comparePassword = await bcrypt.compare(newPassword,dbPassword)
+const comparePassword = await bcrypt.compare(password,dbPassword)
+
+console.log(comparePassword)
+// console.log("Passwordhi");
 
 
- if(comparePassword)
-        throw new Error("Password is same as previous")
+ if(comparePassword){
 
- 
+    throw new Error("Password is same as previous")
+   
+}
+        
+            
 
- const hashedPassword = await bcrypt.hash(newPassword,10)
+
+ const hashedPassword = await bcrypt.hash(password,10)
 
  const changePassword = await User.findByIdAndUpdate(id,{password:hashedPassword},{
             
