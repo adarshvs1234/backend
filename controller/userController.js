@@ -19,13 +19,23 @@ const userController = {
         if(!username||!email||!password){
             throw new Error("Data is incomplete")
         }
-        const userFound = await User.findOne({emailId:email})
+        const maildFound = await User.findOne({emailId:email})
 
-        if(userFound)
-            throw new Error("Email already taken")
-        
+if(maildFound){
+    return res.status(400).json({
+        errors: { email: "Email is already taken" },
+      });
+}    
       
-        const hashedPassword = await bcrypt.hash(password,10)
+    const usernameFound = await User.findOne({userName:username})
+    
+    if(usernameFound){
+        return res.status(400).json({
+            errors: { username: "Username is already taken" },
+          });
+    }
+    
+const hashedPassword = await bcrypt.hash(password,10)
  
 
         const createdUser = await User.create({
@@ -35,7 +45,9 @@ const userController = {
         })
 
         if(!createdUser){
-            throw new Error("User is not Created")
+            return res.status(500).json({
+                message: "User could not be created. Please try again later.",
+              });
         }
         const payload = {
             id:createdUser._id,
@@ -49,7 +61,10 @@ const userController = {
             sameSite:'none'
         })
 
-        
+        res.status(201).json({
+            message: "User successfully registered",
+            token,
+          });
         
         
    // const {id} =  req.user
@@ -95,9 +110,7 @@ const userController = {
         console.log(payload);
         
         
-
-
-        const token = jwt.sign(payload,process.env.JWT_SECRET_KEY)
+const token = jwt.sign(payload,process.env.JWT_SECRET_KEY)
         
         if(!token){
             throw new Error("Token not Generated")
@@ -127,7 +140,8 @@ const userController = {
     res.send("Logout successfully")
       }),
 
-    changePassword : asyncHandler(async(req,res)=>{
+
+changePassword : asyncHandler(async(req,res)=>{
         console.log("hi");
         const {password,confirmpassword} = req.body 
         console.log("confirmpassword",confirmpassword) 
@@ -153,14 +167,12 @@ console.log(comparePassword)
 
  if(comparePassword){
 
-    throw new Error("Password is same as previous")
+    return res.status(400).json({ message: "New password cannot be the same as the old one" });
    
 }
         
             
-
-
- const hashedPassword = await bcrypt.hash(password,10)
+const hashedPassword = await bcrypt.hash(password,10)
 
  const changePassword = await User.findByIdAndUpdate(id,{password:hashedPassword},{
             
@@ -169,11 +181,15 @@ console.log(comparePassword)
         
         })
        
+  console.log("cp",changePassword)
+
+
   
  if(!changePassword)
-         throw new Error("Password not changed")
+    return res.status(500).json({ message: "Password change failed" });
 
-    res.send("Password changed successfully")
+ else
+ res.json({ success: true, message: "Password changed successfully" });
         
 }),
 
@@ -184,29 +200,69 @@ console.log(comparePassword)
     const {newName} = req.body
     const {id} = req.user
 
+        console.log("changename",newName)
+
     const userData = await User.findById(id)
-    //console.log(userData);
+    
+    console.log("userData",userData)
     
      const name =  userData.userName
-     console.log(name);
+     console.log("cuerrentnamecontroller",name);
      
 
      if(name === newName)
         throw new Error ("userName is same as previous name")
+        //{
+        // return res.status(400).json({
+        //     errors: { email: "Email is already taken" },
+        //   });
+        // }
+       
    
 const data = await User.findByIdAndUpdate(id,{userName:newName},{new:true,runValidators:true})
 
    console.log(data);
 
+
   // console.log(id);
    
-   
+   console.log("upadtedcontroller",data)
 
 if(!data)
-    throw new Error("Updation failed") 
+    return res.status(500).json({ message: "Username change failed" });
 
 
-    res.send("Name is successfully changed")
+
+const payload = {
+    id: data._id,
+    name: data.userName,
+  };
+
+console.log("payload",payload)
+
+
+const token = jwt.sign(payload,process.env.JWT_SECRET_KEY)
+
+console.log("token",token)
+
+if(!token){
+    throw new Error("Token not Generated")
+}
+
+res.cookie('token',token,{
+    maxAge:3*24*60*60*1000,
+    httpOnly:true,
+    secure:false,
+    sameSite:'none',
+})
+
+
+
+// res.json({ success: true, message: "Username changed successfully",token});
+res.send(token)
+
+
+
  })
 
 }

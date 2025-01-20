@@ -7,7 +7,7 @@ const User = require("../model/userSchema");
 const userController = require("./userController");
 const { response } = require("express");
 
-
+ 
 
 const transactionController = {
 
@@ -82,17 +82,16 @@ res.send("Transaction successfully added",)
 
  updateTransaction : asyncHandler(async(req,res)=>{
 
-    
-     const {newAmount,newCategory,newTransactionType,newDescription} =  req.body
- const {id} = req.params
-  console.log(id)
 
+     const {newAmount,newTransactionType,newDescription} =  req.body
+ const {id} = req.params
+
+ console.log("kooo2111")
 
   const updatedTransaction = await Transaction.findByIdAndUpdate(id,
     
         {
             amount:newAmount,
-            category:newCategory,
             transactionType:newTransactionType,
             description:newDescription
 
@@ -101,7 +100,7 @@ res.send("Transaction successfully added",)
         new : true,
         runValidators : true
  })
-
+ console.log("update controller")
    console.log(updatedTransaction)
 
  
@@ -110,6 +109,9 @@ res.send("Transaction successfully added",)
     
     else
      throw new Error("Data incomplete")
+
+
+     
     
 }),
 
@@ -127,10 +129,7 @@ getTransaction : asyncHandler(async(req,res)=>{
 
 
 //togetincome
-
-
-
-deleteTransaction : asyncHandler(async(req,res)=>{   //deleteAllTransactions
+deleteTransaction : asyncHandler(async(req,res)=>{  
 
 
     const userId = req.user.id
@@ -171,8 +170,6 @@ deleteOneTransaction: asyncHandler(async (req, res) => {
   
   const {id} = req.params;
 
-  
-
 
   if (!mongoose.Types.ObjectId.isValid(id)) {
     return res.status(400).json({ error: "Invalid transaction ID" });
@@ -185,16 +182,25 @@ deleteOneTransaction: asyncHandler(async (req, res) => {
     return res.status(404).json({ error: "Transaction doesn't exist" });
   }
 
+
+
   console.log("Transaction ID to delete:", id);
+
+
+
+
   const userDelete = await User.findByIdAndUpdate(
     userId,
     { $pull: { transaction: id } },
     { new: true, runValidators: true }
   );
 
+
   if (!userDelete) {
     return res.status(404).json({ error: "User not found" });
   }
+
+
 
   res.status(200).json({ message: "Transaction deleted successfully" });
 }),
@@ -205,8 +211,9 @@ deleteOneTransaction: asyncHandler(async (req, res) => {
 summary : asyncHandler(async(req,res)=>{
 
 
-  
+ 
     const userId = req.user.id 
+   
     console.log(userId);
     
     const results = await User.aggregate([
@@ -241,18 +248,18 @@ summary : asyncHandler(async(req,res)=>{
 }
 ])
 
-
+console.log("summary controller",results)
 let  totalExpense=0
 let  totalIncome = 0
 
 console.log("hida")
-results.forEach(element => {
+results.map(element => {
   const amount = element.transactionDetails.amount
   const transactionType = element.transactionDetails.transactionType
 
-  if (transactionType === 'expense') {
+  if (transactionType === 'Expense') {
     totalExpense += amount 
-  } else if (transactionType === 'income') {
+  } else if (transactionType === 'Income') {
     totalIncome += amount 
   }
 })
