@@ -129,35 +129,35 @@ getTransaction : asyncHandler(async(req,res)=>{
 
 
 //togetincome
-deleteTransaction : asyncHandler(async(req,res)=>{  
+// deleteTransaction : asyncHandler(async(req,res)=>{  
 
 
-    const userId = req.user.id
-    const {id} = req.params
+//     const userId = req.user.id
+//     const {id} = req.params
  
-   console.log(id);
+//    console.log(id);
    
    
     
-const transactionDelete = await Transaction.findByIdAndDelete(id);
+// const transactionDelete = await Transaction.findByIdAndDelete(id);
 
-if(!transactionDelete)
-    throw new Error("Transaction doesn't exist ")
+// if(!transactionDelete)
+//     throw new Error("Transaction doesn't exist ")
  
 
-const userDelete = await User.findByIdAndUpdate(userId ,{ "$pull": {transaction : new mongoose.Types.ObjectId(id)}},
+// const userDelete = await User.findByIdAndUpdate(userId ,{ "$pull": {transaction : new mongoose.Types.ObjectId(id)}},
 
-{
+// {
         
-    new : true,
-    runValidators : true
-})
+//     new : true,
+//     runValidators : true
+// })
 
 
-res.send("Transaction deleted successfully")
+// res.send("Transaction deleted successfully")
 
 
-}),
+// }),
 
 
 
@@ -183,13 +183,11 @@ deleteOneTransaction: asyncHandler(async (req, res) => {
   }
 
 
-
-  console.log("Transaction ID to delete:", id);
-
+console.log("Transaction ID to delete:", id);
 
 
 
-  const userDelete = await User.findByIdAndUpdate(
+const userDelete = await User.findByIdAndUpdate(
     userId,
     { $pull: { transaction: id } },
     { new: true, runValidators: true }
