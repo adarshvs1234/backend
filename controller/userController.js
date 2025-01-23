@@ -61,10 +61,12 @@ const hashedPassword = await bcrypt.hash(password,10)
             sameSite:'none'
         })
 
-        res.status(201).json({
-            message: "User successfully registered",
-            token,
-          });
+//  res.status(201).json({
+//          message: "User successfully registered",
+//              token,
+//            });
+
+     res.send(token)
         
         
    // const {id} =  req.user
@@ -73,7 +75,7 @@ const hashedPassword = await bcrypt.hash(password,10)
     // const userTransactionUpdate =  User.findByIdAndUpdate(id,{transaction : createdTransaction})  //transaction inserted to the db
 
 
-        res.send(token)
+        
     }),
     signIn :asyncHandler(async(req,res)=>{
        console.log(req);

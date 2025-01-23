@@ -22,6 +22,7 @@ console.log("hi");
 var decoded = jwt.verify(token,process.env.JWT_SECRET_KEY)
 // console.log(decoded);
 
+
 req.user = {
     id:decoded.id,
     name:decoded.name

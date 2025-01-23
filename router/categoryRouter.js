@@ -4,7 +4,7 @@ const middleware = require('../middleware/middleware')
 
 const categoryRouter = express.Router()
 
-//newlyadded
+
 categoryRouter.get("/categorylist",middleware,transactionController.categorylist)
 categoryRouter.get("/category_transaction/:id",middleware,transactionController.categoryTransaction)
 categoryRouter.delete("/delete_category/:id",middleware,transactionController.deleteCategory)
