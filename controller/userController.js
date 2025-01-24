@@ -77,7 +77,8 @@ const hashedPassword = await bcrypt.hash(password,10)
 
         
     }),
-    signIn :asyncHandler(async(req,res)=>{
+    signIn :
+    asyncHandler(async(req,res)=>{
        console.log(req);
        
         const {email,password} = req.body 
@@ -128,8 +129,8 @@ const token = jwt.sign(payload,process.env.JWT_SECRET_KEY)
      
      //console.log(id);
 
-
-        res.send(token)
+        console.log("token1",token)
+         res.send(token)
 
         
         
@@ -197,7 +198,8 @@ const hashedPassword = await bcrypt.hash(password,10)
 
 
 
- changeName : asyncHandler(async(req,res)=>{
+ changeName : 
+ asyncHandler(async(req,res)=>{
 
     const {newName} = req.body
     const {id} = req.user
